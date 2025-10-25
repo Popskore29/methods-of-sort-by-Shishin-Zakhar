@@ -18,7 +18,7 @@ void selectionSort(T arr[], int size) {
         }
     }
 }
-Пример использования 
+Пример использования сортировки выбором
 #include <iostream>
 #include <algorithm>
 
@@ -63,4 +63,444 @@ int main() {
     
     return 0;
 }
-_______
+Сортировка слиянием 
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// Функция слияния двух отсортированных массивов
+void merge(vector<int>& arr, int left, int mid, int right) {
+    // Размеры временных массивов
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    // Создаем временные массивы
+    vector<int> leftArr(n1);
+    vector<int> rightArr(n2);
+    
+    // Копируем данные во временные массивы
+    for (int i = 0; i < n1; i++)
+        leftArr[i] = arr[left + i];
+    for (int j = 0; j < n2; j++)
+        rightArr[j] = arr[mid + 1 + j];
+    
+    // Слияние временных массивов обратно в arr[left..right]
+    int i = 0, j = 0, k = left;
+    
+    while (i < n1 && j < n2) {
+        if (leftArr[i] <= rightArr[j]) {
+            arr[k] = leftArr[i];
+            i++;
+        } else {
+            arr[k] = rightArr[j];
+            j++;
+        }
+        k++;
+    }
+    
+    // Копируем оставшиеся элементы leftArr
+    while (i < n1) {
+        arr[k] = leftArr[i];
+        i++;
+        k++;
+    }
+    
+    // Копируем оставшиеся элементы rightArr
+    while (j < n2) {
+        arr[k] = rightArr[j];
+        j++;
+        k++;
+    }
+}
+
+// Основная функция сортировки слиянием
+void mergeSort(vector<int>& arr, int left, int right) {
+    if (left >= right) return;
+    
+    int mid = left + (right - left) / 2;
+    
+    // Сортируем первую и вторую половины
+    mergeSort(arr, left, mid);
+    mergeSort(arr, mid + 1, right);
+    
+    // Сливаем отсортированные половины
+    merge(arr, left, mid, right);
+}
+
+// Вспомогательная функция для вывода массива
+void printArray(const vector<int>& arr) {
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    vector<int> numbers = {64, 25, 12, 22, 11, 90, 5};
+    
+    cout << "Исходный массив: ";
+    printArray(numbers);
+    
+    mergeSort(numbers, 0, numbers.size() - 1);
+    
+    cout << "Отсортированный массив: ";
+    printArray(numbers);
+    
+    return 0;
+}
+Пример использования сортировки слиянием 
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+template <typename T>
+void merge(vector<T>& arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    vector<T> leftArr(n1);
+    vector<T> rightArr(n2);
+    
+    for (int i = 0; i < n1; i++)
+        leftArr[i] = arr[left + i];
+    for (int j = 0; j < n2; j++)
+        rightArr[j] = arr[mid + 1 + j];
+    
+    int i = 0, j = 0, k = left;
+    
+    while (i < n1 && j < n2) {
+        if (leftArr[i] <= rightArr[j]) {
+            arr[k] = leftArr[i];
+            i++;
+        } else {
+            arr[k] = rightArr[j];
+            j++;
+        }
+        k++;
+    }
+    
+    while (i < n1) {
+        arr[k] = leftArr[i];
+        i++;
+        k++;
+    }
+    
+    while (j < n2) {
+        arr[k] = rightArr[j];
+        j++;
+        k++;
+    }
+}
+
+template <typename T>
+void mergeSort(vector<T>& arr, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        merge(arr, left, mid, right);
+    }
+}
+
+int main() {
+    // С целыми числами
+    vector<int> intArr = {5, 2, 8, 1, 9};
+    mergeSort(intArr, 0, intArr.size() - 1);
+    cout << "Целые числа: ";
+    for (int num : intArr) cout << num << " ";
+    cout << endl;
+    
+    // С дробными числами
+    vector<double> doubleArr = {5.5, 2.2, 8.8, 1.1, 9.9};
+    mergeSort(doubleArr, 0, doubleArr.size() - 1);
+    cout << "Дробные числа: ";
+    for (double num : doubleArr) cout << num << " ";
+    cout << endl;
+    
+    // С символами
+    vector<char> charArr = {'e', 'b', 'd', 'a', 'c'};
+    mergeSort(charArr, 0, charArr.size() - 1);
+    cout << "Символы: ";
+    for (char ch : charArr) cout << ch << " ";
+    cout << endl;
+    
+    return 0;
+}
+Пирамедальная сортировка 
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// Восстановление свойства кучи (max-heap)
+void heapify(vector<int>& arr, int n, int i) {
+    int largest = i;        // Инициализируем наибольший элемент как корень
+    int left = 2 * i + 1;   // Левый потомок
+    int right = 2 * i + 2;  // Правый потомок
+
+    // Если левый потомок больше корня
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+
+    // Если правый потомок больше, чем наибольший элемент на данный момент
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+
+    // Если наибольший элемент не корень
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+
+        // Рекурсивно восстанавливаем кучу для затронутой поддерева
+        heapify(arr, n, largest);
+    }
+}
+
+// Основная функция пирамидальной сортировки
+void heapSort(vector<int>& arr) {
+    int n = arr.size();
+
+    // Построение max-heap (перегруппировка массива)
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+
+    // Извлекаем элементы из кучи один за другим
+    for (int i = n - 1; i > 0; i--) {
+        // Перемещаем текущий корень в конец
+        swap(arr[0], arr[i]);
+
+        // Вызываем heapify на уменьшенной куче
+        heapify(arr, i, 0);
+    }
+}
+
+// Функция для вывода массива
+void printArray(const vector<int>& arr) {
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    vector<int> numbers = {64, 25, 12, 22, 11, 90, 5};
+    
+    cout << "Исходный массив: ";
+    printArray(numbers);
+    
+    heapSort(numbers);
+    
+    cout << "Отсортированный массив: ";
+    printArray(numbers);
+    
+    return 0;
+}
+Пример использования пирамедальной сортировки 
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+template <typename T>
+void heapify(vector<T>& arr, int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+        heapify(arr, n, largest);
+    }
+}
+
+template <typename T>
+void heapSort(vector<T>& arr) {
+    int n = arr.size();
+
+    // Построение max-heap
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+
+    // Извлечение элементов из кучи
+    for (int i = n - 1; i > 0; i--) {
+        swap(arr[0], arr[i]);
+        heapify(arr, i, 0);
+    }
+}
+
+template <typename T>
+void printArray(const vector<T>& arr) {
+    for (const T& element : arr) {
+        cout << element << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    // С целыми числами
+    vector<int> intArr = {5, 2, 8, 1, 9, 3};
+    cout << "Целые числа до сортировки: ";
+    printArray(intArr);
+    heapSort(intArr);
+    cout << "Целые числа после сортировки: ";
+    printArray(intArr);
+    cout << endl;
+    
+    // С дробными числами
+    vector<double> doubleArr = {5.5, 2.2, 8.8, 1.1, 9.9, 3.3};
+    cout << "Дробные числа до сортировки: ";
+    printArray(doubleArr);
+    heapSort(doubleArr);
+    cout << "Дробные числа после сортировки: ";
+    printArray(doubleArr);
+    cout << endl;
+    
+    // С символами
+    vector<char> charArr = {'e', 'b', 'd', 'a', 'c', 'f'};
+    cout << "Символы до сортировки: ";
+    printArray(charArr);
+    heapSort(charArr);
+    cout << "Символы после сортировки: ";
+    printArray(charArr);
+    
+    return 0;
+}
+Интерполирующий поиск
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// Функция интерполирующего поиска
+int interpolationSearch(const vector<int>& arr, int target) {
+    int low = 0;
+    int high = arr.size() - 1;
+    
+    // Пока целевой элемент в пределах диапазона и массив отсортирован
+    while (low <= high && target >= arr[low] && target <= arr[high]) {
+        // Если диапазон сократился до одного элемента
+        if (low == high) {
+            if (arr[low] == target) return low;
+            return -1;
+        }
+        
+        // Формула интерполяции для определения позиции
+        int pos = low + ((target - arr[low]) * (high - low)) / (arr[high] - arr[low]);
+        
+        // Проверяем найденную позицию
+        if (arr[pos] == target) {
+            return pos;
+        }
+        
+        // Если целевой элемент меньше, ищем в левой части
+        if (arr[pos] > target) {
+            high = pos - 1;
+        } 
+        // Если целевой элемент больше, ищем в правой части
+        else {
+            low = pos + 1;
+        }
+    }
+    
+    return -1; // Элемент не найден
+}
+
+int main() {
+    vector<int> sortedArray = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+    int target = 50;
+    
+    cout << "Отсортированный массив: ";
+    for (int num : sortedArray) {
+        cout << num << " ";
+    }
+    cout << endl;
+    
+    int result = interpolationSearch(sortedArray, target);
+    
+    if (result != -1) {
+        cout << "Элемент " << target << " найден на позиции " << result << endl;
+    } else {
+        cout << "Элемент " << target << " не найден" << endl;
+    }
+    
+    // Поиск нескольких элементов
+    vector<int> targets = {10, 25, 70, 95, 100};
+    for (int t : targets) {
+        int res = interpolationSearch(sortedArray, t);
+        cout << "Элемент " << t << ": ";
+        if (res != -1) {
+            cout << "найден на позиции " << res << endl;
+        } else {
+            cout << "не найден" << endl;
+        }
+    }
+    
+    return 0;
+}
+пример использования интерполирующего поиска
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int interpolationSearchWithSteps(const vector<int>& arr, int target) {
+    int low = 0;
+    int high = arr.size() - 1;
+    int steps = 0;
+    
+    cout << "Поиск элемента " << target << ":" << endl;
+    
+    while (low <= high && target >= arr[low] && target <= arr[high]) {
+        steps++;
+        
+        // Формула интерполяции
+        int pos = low + ((target - arr[low]) * (high - low)) / (arr[high] - arr[low]);
+        
+        cout << "Шаг " << steps << ": low=" << low << ", high=" << high 
+             << ", pos=" << pos << ", arr[pos]=" << arr[pos] << endl;
+        
+        if (arr[pos] == target) {
+            cout << "Элемент найден за " << steps << " шагов" << endl;
+            return pos;
+        }
+        
+        if (arr[pos] > target) {
+            high = pos - 1;
+            cout << "Идем влево: high = " << high << endl;
+        } else {
+            low = pos + 1;
+            cout << "Идем вправо: low = " << low << endl;
+        }
+    }
+    
+    cout << "Элемент не найден за " << steps << " шагов" << endl;
+    return -1;
+}
+
+int main() {
+    vector<int> array = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30};
+    
+    cout << "Массив: ";
+    for (int num : array) cout << num << " ";
+    cout << endl << endl;
+    
+    interpolationSearchWithSteps(array, 16);
+    cout << endl;
+    
+    interpolationSearchWithSteps(array, 5);
+    cout << endl;
+    
+    interpolationSearchWithSteps(array, 30);
+    
+    return 0;
+}
