@@ -1,0 +1,395 @@
+Сортировка пузырьком 
+def bubble_sort(arr):
+    """
+    Сортировка пузырьком
+    """
+    n = len(arr)
+    
+    # Проходим по всем элементам массива
+    for i in range(n):
+        # Флаг для оптимизации - если не было перестановок, массив отсортирован
+        swapped = False
+        
+        # Последние i элементов уже на своих местах
+        for j in range(0, n - i - 1):
+            # Сравниваем соседние элементы
+            if arr[j] > arr[j + 1]:
+                # Меняем местами, если они в неправильном порядке
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        
+        # Если не было перестановок, выходим досрочно
+        if not swapped:
+            break
+Пример использования сортировки пузырьком 
+def bubble_sort_with_steps(arr):
+    """
+    Сортировка пузырьком с выводом каждого шага
+    """
+    n = len(arr)
+    print(f"Начальный массив: {arr}")
+    
+    for i in range(n):
+        swapped = False
+        print(f"\nПроход {i + 1}:")
+        
+        for j in range(0, n - i - 1):
+            print(f"  Сравниваем {arr[j]} и {arr[j + 1]}", end="")
+            
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+                print(f" -> меняем местами: {arr}")
+            else:
+                print(" -> порядок правильный")
+        
+        print(f"После прохода {i + 1}: {arr}")
+        
+        if not swapped:
+            print("Перестановок не было, завершаем досрочно!")
+            break
+
+# Демонстрация
+numbers = [5, 2, 8, 1, 9]
+bubble_sort_with_steps(numbers)
+
+Сортировка вставками 
+def insertion_sort(arr):
+    """
+    Сортировка вставками
+    """
+    # Проходим по всем элементам, начиная со второго
+    for i in range(1, len(arr)):
+        key = arr[i]  # Текущий элемент для вставки
+        j = i - 1     # Индекс предыдущего элемента
+        
+        # Сдвигаем элементы большие key вправо
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        
+        # Вставляем key на правильную позицию
+        arr[j + 1] = key
+
+Пример использования сортировки вставками 
+def insertion_sort_universal(arr, key=None, reverse=False):
+    """
+    Универсальная сортировка вставками
+    """
+    for i in range(1, len(arr)):
+        current = arr[i]
+        
+        if key:
+            current_key = key(current)
+        else:
+            current_key = current
+        
+        j = i - 1
+        
+        # Сравниваем с использованием ключевой функции и порядка
+        while j >= 0:
+            if key:
+                compare_key = key(arr[j])
+            else:
+                compare_key = arr[j]
+            
+            # Определяем условие для сдвига
+            if reverse:
+                should_shift = compare_key < current_key
+            else:
+                should_shift = compare_key > current_key
+            
+            if should_shift:
+                arr[j + 1] = arr[j]
+                j -= 1
+            else:
+                break
+        
+        arr[j + 1] = current
+
+# Примеры использования
+numbers = [64, 34, 25, 12, 22, 11, 90]
+print("Исходный массив:", numbers)
+
+# Обычная сортировка
+insertion_sort_universal(numbers)
+print("По возрастанию:", numbers)
+
+# Сортировка по убыванию
+insertion_sort_universal(numbers, reverse=True)
+print("По убыванию:", numbers)
+
+# Сортировка сложных объектов
+students = [
+    {"name": "Alice", "grade": 85},
+    {"name": "Bob", "grade": 92},
+    {"name": "Charlie", "grade": 78},
+    {"name": "Diana", "grade": 88}
+]
+
+print("\nСтуденты до сортировки:")
+for student in students:
+    print(f"  {student['name']}: {student['grade']}")
+
+insertion_sort_universal(students, key=lambda x: x["grade"])
+print("\nСтуденты после сортировки по оценкам:")
+for student in students:
+    print(f"  {student['name']}: {student['grade']}")
+
+# Сортировка строк по длине
+words = ["python", "java", "c", "javascript", "go"]
+print(f"\nСлова до сортировки: {words}")
+insertion_sort_universal(words, key=len)
+print(f"Слова после сортировки по длине: {words}")
+
+Сортировка Шелла
+def shell_sort(arr):
+    """
+    Сортировка Шелла
+    """
+    n = len(arr)
+    # Начальный шаг - последовательность Кнута
+    gap = 1
+    while gap < n // 3:
+        gap = 3 * gap + 1
+    
+    # Уменьшаем шаг до 1
+    while gap >= 1:
+        # Выполняем сортировку вставками с заданным шагом
+        for i in range(gap, n):
+            temp = arr[i]
+            j = i
+            # Сдвигаем элементы, пока не найдем правильную позицию
+            while j >= gap and arr[j - gap] > temp:
+                arr[j] = arr[j - gap]
+                j -= gap
+            arr[j] = temp
+        gap //= 3
+
+# Пример использования
+numbers = [64, 34, 25, 12, 22, 11, 90, 5, 77, 88]
+print("Исходный массив:", numbers)
+
+shell_sort(numbers)
+print("Отсортированный массив:", numbers)
+
+Пример использования сортировки Шелла
+def shell_sort_optimized(arr):
+    """
+    Оптимизированная сортировка Шелла
+    """
+    n = len(arr)
+    
+    # Используем последовательность Ciura (эмпирически оптимальная)
+    gaps = [701, 301, 132, 57, 23, 10, 4, 1]
+    
+    # Фильтруем шаги, которые слишком большие для массива
+    gaps = [gap for gap in gaps if gap < n]
+    
+    for gap in gaps:
+        # Оптимизация: используем технику с флагом для частично отсортированных массивов
+        for i in range(gap, n):
+            temp = arr[i]
+            j = i
+            
+            # Быстрый путь для уже отсортированных элементов
+            if arr[j - gap] <= temp:
+                continue
+                
+            while j >= gap and arr[j - gap] > temp:
+                arr[j] = arr[j - gap]
+                j -= gap
+            
+            arr[j] = temp
+    
+    return arr
+Быстрая сортировка 
+def quick_sort(arr):
+    """
+    Быстрая сортировка
+    """
+    if len(arr) <= 1:
+        return arr
+    
+    pivot = arr[len(arr) // 2]  # Выбираем опорный элемент
+    left = [x for x in arr if x < pivot]     # Элементы меньше опорного
+    middle = [x for x in arr if x == pivot]  # Элементы равные опорному
+    right = [x for x in arr if x > pivot]    # Элементы больше опорного
+    
+    return quick_sort(left) + middle + quick_sort(right)
+
+Пример использования быстрой сортировки 
+
+def quick_sort_universal(arr, key=None, reverse=False):
+    """
+    Универсальная быстрая сортировка
+    """
+    if len(arr) <= 1:
+        return arr
+    
+    pivot = arr[len(arr) // 2]
+    
+    if key:
+        pivot_key = key(pivot)
+        left = [x for x in arr if key(x) < pivot_key]
+        middle = [x for x in arr if key(x) == pivot_key]
+        right = [x for x in arr if key(x) > pivot_key]
+    else:
+        left = [x for x in arr if x < pivot]
+        middle = [x for x in arr if x == pivot]
+        right = [x for x in arr if x > pivot]
+    
+    if reverse:
+        left, right = right, left
+    
+    return quick_sort_universal(left, key, reverse) + middle + quick_sort_universal(right, key, reverse)
+
+# Примеры использования
+numbers = [64, 34, 25, 12, 22, 11, 90]
+print("Исходный массив:", numbers)
+
+# Обычная сортировка
+result1 = quick_sort_universal(numbers)
+print("По возрастанию:", result1)
+
+# Сортировка по убыванию
+result2 = quick_sort_universal(numbers, reverse=True)
+print("По убыванию:   ", result2)
+
+# Сортировка сложных объектов
+students = [
+    {"name": "Alice", "grade": 85, "age": 20},
+    {"name": "Bob", "grade": 92, "age": 22},
+    {"name": "Charlie", "grade": 78, "age": 19},
+    {"name": "Diana", "grade": 88, "age": 21}
+]
+
+print("\nСтуденты до сортировки:")
+for student in students:
+    print(f"  {student['name']}: оценка {student['grade']}, возраст {student['age']}")
+
+# Сортировка по оценкам
+sorted_by_grade = quick_sort_universal(students, key=lambda x: x["grade"])
+print("\nПо оценкам (возрастание):")
+for student in sorted_by_grade:
+    print(f"  {student['name']}: оценка {student['grade']}")
+
+# Сортировка по возрасту (убывание)
+sorted_by_age = quick_sort_universal(students, key=lambda x: x["age"], reverse=True)
+print("\nПо возрасту (убывание):")
+for student in sorted_by_age:
+    print(f"  {student['name']}: возраст {student['age']}")
+Последовательный поиск 
+def linear_search(arr, target):
+    """
+    Последовательный поиск
+    """
+    for i in range(len(arr)):
+        if arr[i] == target:
+            return i  # Возвращаем индекс найденного элемента
+    return -1  # Элемент не найден
+
+# Пример использования
+numbers = [64, 34, 25, 12, 22, 11, 90, 5, 77, 88]
+target = 22
+
+print("Массив:", numbers)
+print(f"Ищем элемент: {target}")
+
+result = linear_search(numbers, target)
+
+if result != -1:
+    print(f"Элемент найден на позиции: {result}")
+else:
+    print("Элемент не найден")
+Бинарный поиск 
+def binary_search(arr, target):
+    """
+    Бинарный поиск (итеративная версия)
+    """
+    left = 0
+    right = len(arr) - 1
+    
+    while left <= right:
+        mid = (left + right) // 2
+        
+        if arr[mid] == target:
+            return mid  # Элемент найден
+        elif arr[mid] < target:
+            left = mid + 1  # Ищем в правой половине
+        else:
+            right = mid - 1  # Ищем в левой половине
+    
+    return -1  # Элемент не найден
+
+# Пример использования
+numbers = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+target = 11
+
+print("Отсортированный массив:", numbers)
+print(f"Ищем элемент: {target}")
+
+result = binary_search(numbers, target)
+
+if result != -1:
+    print(f"Элемент найден на позиции: {result}")
+else:
+    print("Элемент не найден")
+Поиск по Фибоначчи
+def fibonacci_search(arr, target):
+    """
+    Поиск Фибоначчи
+    """
+    n = len(arr)
+    
+    # Инициализируем числа Фибоначчи
+    fib_m2 = 0  # F(m-2)
+    fib_m1 = 1  # F(m-1)
+    fib_m = fib_m2 + fib_m1  # F(m)
+    
+    # Находим наименьшее число Фибоначчи, большее или равное n
+    while fib_m < n:
+        fib_m2 = fib_m1
+        fib_m1 = fib_m
+        fib_m = fib_m2 + fib_m1
+    
+    # Инициализируем диапазон
+    offset = -1
+    
+    while fib_m > 1:
+        # Проверяем валидность индекса
+        i = min(offset + fib_m2, n - 1)
+        
+        if arr[i] < target:
+            # Сдвигаем вправо
+            fib_m = fib_m1
+            fib_m1 = fib_m2
+            fib_m2 = fib_m - fib_m1
+            offset = i
+        elif arr[i] > target:
+            # Сдвигаем влево
+            fib_m = fib_m2
+            fib_m1 = fib_m1 - fib_m2
+            fib_m2 = fib_m - fib_m1
+        else:
+            return i  # Элемент найден
+    
+    # Проверяем последний элемент
+    if fib_m1 and offset + 1 < n and arr[offset + 1] == target:
+        return offset + 1
+    
+    return -1  # Элемент не найден
+
+# Пример использования
+numbers = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25]
+target = 13
+
+print("Отсортированный массив:", numbers)
+print(f"Ищем элемент: {target}")
+
+result = fibonacci_search(numbers, target)
+
+if result != -1:
+    print(f"Элемент найден на позиции: {result}")
+else:
+    print("Элемент не найден")
