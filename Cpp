@@ -1,6 +1,7 @@
 Сортировка выбором 
 #include <algorithm> // для std::swap
 
+
 // Шаблонная функция для сортировки выбором
 template <typename T>
 void selectionSort(T arr[], int size) {
