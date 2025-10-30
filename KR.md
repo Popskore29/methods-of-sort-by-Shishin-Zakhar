@@ -10,7 +10,8 @@
 В худшем случае, когда все элементы попадают в одну корзину, получаем O(n²)
 При равномерном распределении: O(n + n log(n/k)) = O(n + k)
 
-Принцип работы
+Принцип работы:
+
 Определяется количество корзин 
 buckets = [[] for _ in range(num_buckets)]
 
@@ -40,7 +41,8 @@ for bucket in buckets:
 Каждая операция переворота: O(n)
 Итого: O(n) × O(n) = O(n²)
 
-Принцип работы
+Принцип работы:
+
 Находим позицию максимального элемента в несортированной части
 max_idx = arr.index(max(arr[:size]))
 
@@ -53,6 +55,7 @@ arr[:size] = reversed(arr[:size])
 
 Уменьшаем размер несортированной части и повторяем
 for size in range(n, 1, -1):
+
 Особенности: Алгоритм интересен с теоретической точки зрения, но на практике неэффективен из-за квадратичной сложности. Используется в задачах, где разрешены только операции переворота.
 
 Сортировка бусинами (гравитационная)
@@ -68,29 +71,23 @@ for size in range(n, 1, -1):
 Итого: O(n × m)
 
 Принцип работы:
-Представляем массив как набор вертикальных стержней с бусинами
-"Включаем гравитацию" — бусины падают вниз
-После падения подсчитываем количество бусин на каждом стержне
-Получаем отсортированный массив
 
-```
-def bead_sort(arr):
-    if not arr: return []
-    max_val = max(arr)
-    # Создаем "абак" с бусинами
-    abacus = [[1 if j < num else 0 for j in range(max_val)] for num in arr]
-    # "Падаем" бусинами
-    for i in range(max_val):
-        for j in range(len(arr)):
-            if abacus[j][i] == 1:
-                # Бусина падает вниз
-                k = j
-                while k > 0 and abacus[k-1][i] == 0:
-                    abacus[k][i], abacus[k-1][i] = abacus[k-1][i], abacus[k][i]
-                    k -= 1
-    # Восстанавливаем отсортированный массив
-    return [sum(row) for row in abacus]
-```
+Представляем числа как бусины на вертикальных стержнях
+abacus = [[1 if j < num else 0 for j in range(max_val)] for num in arr]
+
+Бусины падают вниз под действием гравитации
+for i in range(max_val):
+    for j in range(len(arr)):
+        if abacus[j][i] == 1:
+Бусина перемещается вниз
+k = j
+while k > 0 and abacus[k-1][i] == 0:
+abacus[k][i], abacus[k-1][i] = abacus[k-1][i], abacus[k][i]
+k -= 1
+
+Подсчитываем количество бусин на каждом стержне после падения
+return [sum(row) for row in abacus]
+
 Особенности: Работает только для неотрицательных целых чисел. Эффективна когда m (максимальное значение) мало по сравнению с n.
 
 Поиск скачками
@@ -105,31 +102,22 @@ def bead_sort(arr):
 Линейный поиск в блоке размером √n: O(√n)
 Итого: O(√n) + O(√n) = O(√n)
 
-Принцип работы:
+Принцип работы 
+
 Определяем размер прыжка (обычно √n)
-Прыгаем вперед, пока не найдем элемент больше или равный искомому
+step = int(math.sqrt(n))
+
+Прыгаем вперед, пока не найдем блок, содержащий искомый элемент
+while arr[min(step, n) - 1] < target:
+    prev = step
+    step += int(math.sqrt(n))
+
 Возвращаемся к предыдущей позиции
 Выполняем линейный поиск в найденном блоке
-
-```
-import math
-
-def jump_search(arr, target):
-    n = len(arr)
-    step = int(math.sqrt(n))
-    prev = 0
-    
-    while arr[min(step, n) - 1] < target:
-        prev = step
-        step += int(math.sqrt(n))
-        if prev >= n:
-            return -1
-    
-    for i in range(prev, min(step, n)):
-        if arr[i] == target:
-            return i
-    return -1
-```
+for i in range(prev, min(step, n)):
+    if arr[i] == target:
+        return i
+        
 Особенности: Эффективен когда массив слишком велик для полного линейного поиска, но бинарный поиск слишком сложен. Требует отсортированного массива.
 
 Экспоненциальный поиск
@@ -143,32 +131,23 @@ def jump_search(arr, target):
 Бинарный поиск в диапазоне: O(log n)
 Итого: O(log n) + O(log n) = O(log n)
 
-Принцип работы:
-Начинаем с первого элемента
-Удваиваем верхнюю границу пока не найдем диапазон, содержащий искомый элемент
+Принцип работы
+
+Экспоненциально увеличиваем границу поиска
+i = 1
+while i < n and arr[i] <= target:
+    i *= 2
+
+Определяем диапазон для бинарного поиска
+left, right = i // 2, min(i, n - 1)
+
 Выполняем бинарный поиск в найденном диапазоне
-```
-def exponential_search(arr, target):
-    if arr[0] == target:
-        return 0
-    
-    n = len(arr)
-    i = 1
-    while i < n and arr[i] <= target:
-        i *= 2
-    
-    # Бинарный поиск в диапазоне [i/2, min(i, n-1)]
-    left, right = i // 2, min(i, n - 1)
-    while left <= right:
-        mid = (left + right) // 2
-        if arr[mid] == target:
-            return mid
-        elif arr[mid] < target:
-            left = mid + 1
-        else:
-            right = mid - 1
-    return -1
-```
+while left <= right:
+    mid = (left + right) // 2
+    if arr[mid] == target:
+        return mid
+
+        
 Особенности: Особенно эффективен для неограниченных массивов. Всегда работает за O(log n) независимо от положения элемента.
 
 Тернарный поиск
@@ -183,33 +162,14 @@ def exponential_search(arr, target):
 На каждой итерации: O(1) операций
 Итого: O(log₃n)
 
-Принцип работы:
-Делим текущий диапазон на три равные части
-Сравниваем искомый элемент с граничными значениями
-Определяем, в какой трети находится элемент
-Рекурсивно повторяем для выбранной трети
+Принцип работы
 
-```
-def ternary_search(arr, target):
-    def search(left, right):
-        if left > right:
-            return -1
-        
-        mid1 = left + (right - left) // 3
-        mid2 = right - (right - left) // 3
-        
-        if arr[mid1] == target:
-            return mid1
-        if arr[mid2] == target:
-            return mid2
-            
-        if target < arr[mid1]:
-            return search(left, mid1 - 1)
-        elif target > arr[mid2]:
-            return search(mid2 + 1, right)
-        else:
-            return search(mid1 + 1, mid2 - 1)
+Делим диапазон на три равные части
+mid1 = left + (right - left) // 3
+mid2 = right - (right - left) // 3
+
+Сравниваем искомый элемент с граничными значениями
+if target < arr[mid1]:
     
-    return search(0, len(arr) - 1)
-```
-Особенности: Менее эффективен чем бинарный поиск (больше сравнений на каждой итерации). Используется в основном для поиска экстремумов унимодальных функций.
+return search(mid1 + 1, mid2 - 1)поиск (больше сравнений на каждой итерации). 
+Используется в основном для поиска экстремумов унимодальных функций.
