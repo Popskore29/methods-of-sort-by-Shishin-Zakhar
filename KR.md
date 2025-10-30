@@ -10,42 +10,20 @@
 В худшем случае, когда все элементы попадают в одну корзину, получаем O(n²)
 При равномерном распределении: O(n + n log(n/k)) = O(n + k)
 
-Принцип работы:
-Определяется количество корзин (например, по диапазону значений элементов)
-Каждый элемент помещается в корзину согласно функции распределения
-Содержимое каждой корзины сортируется индивидуально
-Корзины соединяются в порядке увеличения диапазона
+# Определяется количество корзин
+buckets = [[] for _ in range(num_buckets)]
 
-```
-def bucket_sort(arr):
-    if len(arr) == 0:
-        return arr
+# Каждый элемент помещается в корзину согласно функции распределения
+index = int((num - min_val) / (max_val - min_val) * (num_buckets - 1))
+buckets[index].append(num)
 
-    # Создаем пустые корзины
-    num_buckets = len(arr)
-    buckets = [[] for _ in range(num_buckets)]
+# Содержимое каждой корзины сортируется индивидуально
+for bucket in buckets:
+    bucket.sort()
 
-    # Распределяем элементы по корзинам
-    max_val, min_val = max(arr), min(arr)
-    if max_val == min_val:
-        return arr
-    
-    for num in arr:
-        # Определяем индекс корзины
-        index = int((num - min_val) / (max_val - min_val) * (num_buckets - 1))
-        buckets[index].append(num)
-
-    # Сортируем каждую корзину
-    for bucket in buckets:
-        bucket.sort()
-
-    # Объединяем отсортированные корзины
-    sorted_arr = []
-    for bucket in buckets:
-        sorted_arr.extend(bucket)
-    
-    return sorted_arr
-```
+# Корзины соединяются в порядке увеличения диапазона
+for bucket in buckets:
+    sorted_arr.extend(bucket)
 Особенности: Эффективна для равномерно распределённых числовых данных и может достигать линейной асимптотики O(n), если размер корзин выбран удачно. Однако эффективность сильно падает при неравномерном распределении данных.
 
 Блинная сортировка
